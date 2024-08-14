@@ -40,7 +40,7 @@ const studentSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    attendence:{
+    attendance:{
         type: Number,
         required: true,
         default: 0
