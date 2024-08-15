@@ -14,7 +14,7 @@ const teacherSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    teacherID:{
+    teacherId:{
         type: Number,
         required: true,
         unique: true

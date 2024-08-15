@@ -2,7 +2,9 @@ const express = require('express');
 const router = express.Router();
 const Student = require('../model/student');
 const {jwtMiddleWare,generateToken} = require('../jwt');
+const Curricular = require('../model/curricular');
 
+// To Register Students
 router.post('/signup', async (req,res)=>{
 
     try{
@@ -26,6 +28,7 @@ router.post('/signup', async (req,res)=>{
 
 })
 
+// To Login and Generate Token By Students
 router.post('/login', async(req,res)=>{
     try{
         const {rollno,password} = req.body;
@@ -53,6 +56,7 @@ router.post('/login', async(req,res)=>{
     }
 })
 
+// To check Profile (By Student)
 router.get('/profile', jwtMiddleWare, async(req,res)=>{
     try{
         const data = req.user.id;
@@ -67,6 +71,7 @@ router.get('/profile', jwtMiddleWare, async(req,res)=>{
     }
 })
 
+// To Change the password of Profile (By Teacher)
 router.put('/profile/password',jwtMiddleWare,async(req,res)=>{
     try{
         const data = req.user.id;
@@ -92,6 +97,7 @@ router.put('/profile/password',jwtMiddleWare,async(req,res)=>{
     }
 })
 
+// To check the Attendance (By Student)
 router.get('/attendance',jwtMiddleWare,async (req,res)=>{
     try{
         const data = req.user.id;
@@ -113,14 +119,15 @@ router.get('/attendance',jwtMiddleWare,async (req,res)=>{
     }
 })
 
-router.get('/curricular', jwtMiddleWare,async(req,res) =>{
+// To check Curricular (By Student)
+router.get('/curricular',jwtMiddleWare, async(req,res)=>{
     try{
-
+        const response = await Curricular.find();
+        res.status(200).json(response);
     }
     catch(err){
         console.log(err);
         res.status(500).json({message: "Internal Server Error"})       
     }
-
 })
 module.exports = router;
