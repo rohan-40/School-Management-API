@@ -44,6 +44,11 @@ const studentSchema = mongoose.Schema({
         type: Number,
         required: true,
         default: 0
+    },
+    totalattendance:{
+        type:Number,
+        required: true,
+        default: 0
     }
 });
 

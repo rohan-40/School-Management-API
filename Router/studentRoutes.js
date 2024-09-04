@@ -19,7 +19,7 @@ router.post('/signup', async (req,res)=>{
 
         const token = generateToken(payload);
         console.log("Student Created");
-        res.status(200).json({response:response,token:token});
+        res.status(200).json({response,token});
     }
     catch(err){
         console.log(err);
@@ -30,32 +30,32 @@ router.post('/signup', async (req,res)=>{
 
 // To Login and Generate Token By Students
 router.post('/login', async(req,res)=>{
-    try{
-        const {rollno,password} = req.body;
-        if(!rollno || !password)
-        {
-            return res.status(401).json({message: "Please give Both rollno and password"})
-        }
-        const student = await Student.findOne({rollno:rollno})
+  try{
+      const {rollno,password} = req.body;
+      if(!rollno || !password)
+      {
+          return res.status(401).json({message: "Please give Both rollno and password"})
+      }
+      const student = await Student.findOne({rollno:rollno})
 
-        if(!student || !(await student.comparePassword(password))){
-            return res.status(401).json({message: "Student Not found or Password Incorrect"});
-        }
+      if(!student || !(await student.comparePassword(password))){
+          return res.status(401).json({message: "Student Not found or Password Incorrect"});
+      }
 
-        const payload = {
-            id: student.id
-        }
-        const token = generateToken(payload);
+      const payload = {
+          id: student.id
+      }
+      const token = generateToken(payload);
 
-        console.log("Login Successfully");
-        res.status(200).json({token:token});
-    }
-    catch(err){
-        console.log(err);
-        res.status(500).json({message: "Internal Server Error"})
-    }
+      console.log("Login Successfully");
+      res.status(200).json({token:token});
+  }
+  catch(err){
+      console.log(err);
+      res.status(500).json({message: "Internal Server Error"})
+  }
 })
-
+  
 // To check Profile (By Student)
 router.get('/profile', jwtMiddleWare, async(req,res)=>{
     try{
@@ -89,6 +89,7 @@ router.put('/profile/password',jwtMiddleWare,async(req,res)=>{
         student.password = newPassword;
         await student.save();
 
+        console.log("Password Changed")
         res.status(200).json({message: "Password Change Successfully"});
     }
     catch(err){
@@ -107,6 +108,7 @@ router.get('/attendance',jwtMiddleWare,async (req,res)=>{
             name: student.name,
             rollno: student.rollno,
             attendance: student.attendance,
+            totalattendance: student.totalattendance,
         }
 
         console.log("Attendance fetched Successfully")

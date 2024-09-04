@@ -53,6 +53,7 @@ router.post('/login',async (req,res)=>{
         res.status(500).json({message: "Internal Server Error"})       
     }
 })
+  
 
 // To Check Teacher Profile
 router.get('/profile',jwtMiddleWare, async (req,res)=>{
@@ -109,7 +110,8 @@ router.get('/student',jwtMiddleWare, async (req,res)=>{
             return res.status(401).json({message: "You are not Teacher"});
         }
 
-        const response = await Student.find().sort({class: 1});
+        const response = await Student.find().sort({class: 1,rollno: 1});
+    
         console.log("Data Fetched Successfully");
         res.status(200).json(response);
     }
@@ -186,9 +188,38 @@ router.get('/student/class/:classNo',jwtMiddleWare, async(req,res)=>{
 })
 
 // To Update Attendance of Students (By Teacher)
-router.get('/student/attendance',jwtMiddleWare, async(req,res)=>{
+router.put('/student/attendance/:classNo',jwtMiddleWare, async(req,res)=>{
     try{
-        
+        const data = req.user.id;
+        const teacher = await Teacher.findById(data);
+        if(!teacher)
+        {
+            return res.status(401).json({message: "You are not Teacher"});
+        }
+
+        const {rollno,status} = req.body;
+        const classNo = req.params.classNo;
+        if (!rollno || !status) {
+            return res.status(400).json({ message: 'please give both rollno and Status' });
+        }
+
+        // Find the student in the specified class
+        const student = await Student.findOne({ class: classNo, rollno: rollno });
+        if(!student){
+            return res.status(401).json({message: "Student Not Found in Class"});
+        }
+
+        if(status === "present"){
+            student.attendance = (student.attendance) + 1;
+            student.totalattendance = (student.totalattendance) + 1;
+        }
+        else if(status === "absent"){
+            student.totalattendance = (student.totalattendance) + 1;
+        }
+
+        await student.save();
+        res.status(200).json({message: "Attendance Updated SuccessFully"});
+
     }
     catch(err){
         console.log(err);
